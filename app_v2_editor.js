@@ -809,9 +809,28 @@ function exportSceneJSON() {
   console.log("Downloaded sceneStateV2.json");
 }
 
+async function loadSceneStateFromFile() {
+  try {
+    const res = await fetch("assets/sceneStateV2.json");
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.warn("No default sceneStateV2.json found");
+    return null;
+  }
+}
+
+
 async function restoreSceneState() {
-  const raw = localStorage.getItem("sceneStateV2");
-  if (!raw) return;
+let raw = localStorage.getItem("sceneStateV2");
+
+if (!raw) {
+  const fileState = await loadSceneStateFromFile();
+  if (!fileState) return;
+  raw = JSON.stringify(fileState);
+  localStorage.setItem("sceneStateV2", raw);
+}
+
 
   let state;
   try {
@@ -1256,3 +1275,4 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
