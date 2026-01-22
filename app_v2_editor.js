@@ -112,7 +112,7 @@ window.addEventListener("keyup", (e) => {
 });
 
 // ===================== LIGHTING ===============================
-scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+scene.add(new THREE.AmbientLight(0xffffff, 1.15));
 
 const sun = new THREE.DirectionalLight(0xffffff, 1.4);
 sun.color.setHex(0xfff1d6);
@@ -1275,4 +1275,5 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
 
