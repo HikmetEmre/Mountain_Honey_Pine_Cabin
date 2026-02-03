@@ -1,6 +1,5 @@
 // ===================== IMPORTS ============================
 
-console.log("app_v2_editor.js loaded");
 
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -157,22 +156,17 @@ function normalizeModel(model, targetSize) {
   const box = new THREE.Box3().setFromObject(model);
   const size = new THREE.Vector3();
   box.getSize(size);
-
-  const maxDim = Math.max(size.x, size.y, size.z);
-  if (maxDim < 0.0001) {
-    console.warn("normalizeModel skipped (invalid bounds)");
-    return;
-  }
-
   const center = new THREE.Vector3();
   box.getCenter(center);
+
   model.position.sub(center);
 
+  const maxDim = Math.max(size.x, size.y, size.z);
   const scale = targetSize / maxDim;
   model.scale.setScalar(scale);
+
   model.position.y = 0;
 }
-
 
 function collectMeshes(root, outArray, opts = {}, filterFn = null) {
   outArray.length = 0;
@@ -230,16 +224,9 @@ async function loadAudioBuffer(url) {
   return await listener.context.decodeAudioData(arrayBuffer);
 }
 
-async function startAudio() {
+function startAudio() {
   if (audioArmed) return;
   audioArmed = true;
-
-  const ctx = listener.context;
-  if (ctx.state === "suspended") {
-    await ctx.resume();
-  }
-}
-
 
   if (!forestSound && forestBuffer) {
     forestSound = new THREE.Audio(listener);
@@ -1233,33 +1220,16 @@ console.log("Terrain ready. All meshes:", terrainMeshes.length, "Ground meshes:"
     console.log("Audio buffers loaded ✅ (waiting for user gesture)");
   }
 
-  initAudio().catch(err => {
-  console.warn("Audio failed to preload:", err);
-});
-
+  await initAudio();
 }
 
-let sceneReady = false;
-
-(async () => {
-  try {
-    await init();
-    sceneReady = true;
-    console.log("Scene ready ✅");
-  } catch (e) {
-    console.error("Init failed:", e);
-  }
-})();
-
+await init();
 
 // ===================== ANIMATE ================================
 const clock = new THREE.Clock();
 
 function animate() {
   requestAnimationFrame(animate);
-
-  if (!sceneReady) return; // ✅ ONLY ADDITION (prevents black frame / Edge issues)
-
   const dt = clock.getDelta();
   const t = clock.elapsedTime;
 
@@ -1278,20 +1248,13 @@ function animate() {
 
   // bees orbit
   if (bees.length) {
-    const center = objects.cabin
-      ? objects.cabin.position
-      : new THREE.Vector3(0, 0, 0);
-
+    const center = objects.cabin ? objects.cabin.position : new THREE.Vector3(0, 0, 0);
     for (const b of bees) {
       b.angle += dt * b.speed;
       b.mesh.position.x = center.x + Math.cos(b.angle) * b.radius;
       b.mesh.position.z = center.z + Math.sin(b.angle) * b.radius;
-      b.mesh.position.y =
-        center.y + b.height + Math.sin(b.angle * 3) * 1.2;
-      b.mesh.rotation.y = Math.atan2(
-        Math.cos(b.angle),
-        -Math.sin(b.angle)
-      );
+      b.mesh.position.y = center.y + b.height + Math.sin(b.angle * 3) * 1.2;
+      b.mesh.rotation.y = Math.atan2(Math.cos(b.angle), -Math.sin(b.angle));
     }
   }
 
@@ -1304,9 +1267,7 @@ function animate() {
 
   renderer.render(scene, camera);
 }
-
-animate(); // ✅ only once
-
+animate();
 
 // ===================== RESIZE ================================
 window.addEventListener("resize", () => {
@@ -1314,21 +1275,4 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
