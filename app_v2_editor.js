@@ -230,13 +230,15 @@ async function loadAudioBuffer(url) {
   return await listener.context.decodeAudioData(arrayBuffer);
 }
 
-async function startAudio() {
+function startAudio() {
   if (audioArmed) return;
   audioArmed = true;
 
   const ctx = listener.context;
   if (ctx.state === "suspended") {
-    await ctx.resume(); // ✅ valid
+    ctx.resume().then(() => {
+      console.log("Audio resumed");
+    });
   }
 }
 
@@ -1313,6 +1315,7 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
 
 
 
