@@ -1245,6 +1245,9 @@ const clock = new THREE.Clock();
 
 function animate() {
   requestAnimationFrame(animate);
+
+  if (!sceneReady) return; // ✅ ONLY ADDITION (prevents black frame / Edge issues)
+
   const dt = clock.getDelta();
   const t = clock.elapsedTime;
 
@@ -1263,13 +1266,20 @@ function animate() {
 
   // bees orbit
   if (bees.length) {
-    const center = objects.cabin ? objects.cabin.position : new THREE.Vector3(0, 0, 0);
+    const center = objects.cabin
+      ? objects.cabin.position
+      : new THREE.Vector3(0, 0, 0);
+
     for (const b of bees) {
       b.angle += dt * b.speed;
       b.mesh.position.x = center.x + Math.cos(b.angle) * b.radius;
       b.mesh.position.z = center.z + Math.sin(b.angle) * b.radius;
-      b.mesh.position.y = center.y + b.height + Math.sin(b.angle * 3) * 1.2;
-      b.mesh.rotation.y = Math.atan2(Math.cos(b.angle), -Math.sin(b.angle));
+      b.mesh.position.y =
+        center.y + b.height + Math.sin(b.angle * 3) * 1.2;
+      b.mesh.rotation.y = Math.atan2(
+        Math.cos(b.angle),
+        -Math.sin(b.angle)
+      );
     }
   }
 
@@ -1283,12 +1293,7 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-function animate() {
-  requestAnimationFrame(animate);
-  if (!sceneReady) return; // 🚨 prevents black frame
-  ...
-}
-animate();
+animate(); // ✅ only once
 
 // ===================== RESIZE ================================
 window.addEventListener("resize", () => {
@@ -1296,6 +1301,7 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
 
 
 
