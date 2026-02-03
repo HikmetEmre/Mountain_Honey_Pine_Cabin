@@ -1233,12 +1233,16 @@ console.log("Terrain ready. All meshes:", terrainMeshes.length, "Ground meshes:"
 
 let sceneReady = false;
 
-try {
-  await init();
-  sceneReady = true;
-} catch (e) {
-  console.error("Init failed:", e);
-}
+(async () => {
+  try {
+    await init();
+    sceneReady = true;
+    console.log("Scene ready ✅");
+  } catch (e) {
+    console.error("Init failed:", e);
+  }
+})();
+
 
 // ===================== ANIMATE ================================
 const clock = new THREE.Clock();
@@ -1302,6 +1306,7 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
 
 
 
