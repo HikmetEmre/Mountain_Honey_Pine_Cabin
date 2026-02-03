@@ -238,6 +238,8 @@ async function startAudio() {
   if (ctx.state === "suspended") {
     await ctx.resume();
   }
+}
+
 
   if (!forestSound && forestBuffer) {
     forestSound = new THREE.Audio(listener);
@@ -1312,6 +1314,7 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
 
 
 
