@@ -1,5 +1,6 @@
 // ===================== IMPORTS ============================
 
+console.log("app_v2_editor.js loaded");
 
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -1306,6 +1307,7 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
 
 
 
