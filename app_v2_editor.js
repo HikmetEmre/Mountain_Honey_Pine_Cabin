@@ -266,6 +266,7 @@ async function startAudio() {
   console.log("Audio started ✅");
 }
 
+
 function armAudioStart() {
   const onFirst = () => {
     startAudio();
@@ -1280,6 +1281,7 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
 
 
 
