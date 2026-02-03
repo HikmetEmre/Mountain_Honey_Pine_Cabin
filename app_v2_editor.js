@@ -230,9 +230,14 @@ async function loadAudioBuffer(url) {
   return await listener.context.decodeAudioData(arrayBuffer);
 }
 
-function startAudio() {
+async function startAudio() {
   if (audioArmed) return;
   audioArmed = true;
+
+  const ctx = listener.context;
+  if (ctx.state === "suspended") {
+    await ctx.resume();
+  }
 
   if (!forestSound && forestBuffer) {
     forestSound = new THREE.Audio(listener);
@@ -1307,6 +1312,7 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
 
 
 
