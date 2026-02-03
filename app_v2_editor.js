@@ -156,17 +156,22 @@ function normalizeModel(model, targetSize) {
   const box = new THREE.Box3().setFromObject(model);
   const size = new THREE.Vector3();
   box.getSize(size);
-  const center = new THREE.Vector3();
-  box.getCenter(center);
-
-  model.position.sub(center);
 
   const maxDim = Math.max(size.x, size.y, size.z);
+  if (maxDim < 0.0001) {
+    console.warn("normalizeModel skipped (invalid bounds)");
+    return;
+  }
+
+  const center = new THREE.Vector3();
+  box.getCenter(center);
+  model.position.sub(center);
+
   const scale = targetSize / maxDim;
   model.scale.setScalar(scale);
-
   model.position.y = 0;
 }
+
 
 function collectMeshes(root, outArray, opts = {}, filterFn = null) {
   outArray.length = 0;
@@ -1220,10 +1225,20 @@ console.log("Terrain ready. All meshes:", terrainMeshes.length, "Ground meshes:"
     console.log("Audio buffers loaded ✅ (waiting for user gesture)");
   }
 
-  await initAudio();
+  initAudio().catch(err => {
+  console.warn("Audio failed to preload:", err);
+});
+
 }
 
-await init();
+let sceneReady = false;
+
+try {
+  await init();
+  sceneReady = true;
+} catch (e) {
+  console.error("Init failed:", e);
+}
 
 // ===================== ANIMATE ================================
 const clock = new THREE.Clock();
@@ -1267,6 +1282,12 @@ function animate() {
 
   renderer.render(scene, camera);
 }
+
+function animate() {
+  requestAnimationFrame(animate);
+  if (!sceneReady) return; // 🚨 prevents black frame
+  ...
+}
 animate();
 
 // ===================== RESIZE ================================
@@ -1275,5 +1296,6 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
 
 
