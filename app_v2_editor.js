@@ -234,14 +234,6 @@ function startAudio() {
   if (audioArmed) return;
   audioArmed = true;
 
-  const ctx = listener.context;
-  if (ctx.state === "suspended") {
-    ctx.resume().then(() => {
-      console.log("Audio resumed");
-    });
-  }
-}
-
   if (!forestSound && forestBuffer) {
     forestSound = new THREE.Audio(listener);
     forestSound.setBuffer(forestBuffer);
@@ -1315,6 +1307,7 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
 
 
 
